@@ -1,9 +1,8 @@
 import pyautogui
 import pyperclip
-import random
-# import pytesseract
 import time
 import bing
+import poe
 
 
 # 打开微信窗口
@@ -24,8 +23,12 @@ def is_wechat_top():
 
 def back_home():
     backbutton = pyautogui.locateOnScreen('back.png', confidence=0.8)
-    backbutton_pos = pyautogui.center(backbutton)
-    pyautogui.click(backbutton_pos)
+    if backbutton:
+        backbutton_pos = pyautogui.center(backbutton)
+        pyautogui.click(backbutton_pos)
+    else:
+        pyautogui.hotkey('winleft', '1')
+        time.sleep(1)
 
 def reply_msg(user):
     print(f"开始回复【{user}】")
@@ -37,7 +40,6 @@ def reply_msg(user):
 #     print("发送人的名称为：", sender_name)
 
 def send_msg(msg):
-    # pyautogui.hotkey('winleft', '1')
     input_wind = pyautogui.locateOnScreen('input.png', confidence=0.8)
     input_wind_pos = pyautogui.center(input_wind)
     pyautogui.click(input_wind_pos[0]+20, input_wind_pos[1]+20)
@@ -55,26 +57,27 @@ while True:
         pyautogui.click(chat_records_pos)
         time.sleep(1)
         print("开始寻找@我的具体信息")
-        at_msg = list(pyautogui.locateAllOnScreen('at_lyt.png', confidence=0.8))
-        at_msg_pos = pyautogui.center(at_msg[-1])
-        pyautogui.doubleClick(at_msg_pos)
-        pyautogui.hotkey('ctrl', 'c')
-        chat_records = pyperclip.paste()[5:]
-        # send_msg(f'好的，关于："{chat_records}"的消息我已经收到！')
-        print("已获取提问，等待结果获取")
-        answer = bing.reply(chat_records)
-        pyautogui.hotkey('winleft', '1')
-        send_msg(answer)
-        back_home()
-        print(chat_records)
-        with open('chat_records.txt', 'a', encoding='utf-8') as f:
-            f.write(chat_records + '\n')
-            print("获得并保存了一个新的聊天信息到到文件。")
+        at_msg = list(pyautogui.locateAllOnScreen('at_lgc.png', confidence=0.8))
+        if at_msg:
+            at_msg_pos = pyautogui.center(at_msg[-1])
+            pyautogui.doubleClick(at_msg_pos)
+            pyautogui.hotkey('ctrl', 'c')
+            chat_records = pyperclip.paste()[5:]
+            send_msg(f'好的，关于："{chat_records}"的消息我已经收到！')
+            print("已获取提问，等待结果获取")
+            answer = poe.reply(chat_records)
+            pyautogui.hotkey('winleft', '1')
+            send_msg(answer)
+            back_home()
+            print(chat_records)
+            with open('chat_records.txt', 'a', encoding='utf-8') as f:
+                f.write(chat_records + '\n')
+                print("获得并保存了一个新的聊天信息到到文件。")
+        else:
+            back_home()
     else:
         print("暂未获得待处理信息")
         if pyautogui.locateOnScreen('wenjian.png', confidence=0.8):
             time.sleep(2)
         else:
             back_home()
-
-
